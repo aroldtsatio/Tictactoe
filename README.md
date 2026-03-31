@@ -92,5 +92,5 @@ The game is optimized for:
 
 ## 👤 Author
 
-* Your Name
-* GitHub: https://github.com/your-username
+* Arold Tsatio
+* GitHub: https://github.com/aroldtsatio
