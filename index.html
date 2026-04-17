@@ -1,106 +1,417 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe</title>
-    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body{
-        background-color: rgba(145, 168, 224, 255);
-    
-        }
-        [id^="cell"]{
-            opacity: 0.7; transition: opacity 0.3s ease-in-out;
-        }
-        [id^="cell"]:hover{ opacity: 1;}
-       
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic-Tac-Toe</title>
+  <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: "0 20px 60px rgba(0,0,0,0.35)",
+          },
+          colors: {
+            brand: {
+              50: "#eef2ff",
+              100: "#e0e7ff",
+              400: "#818cf8",
+              500: "#6366f1",
+              600: "#4f46e5",
+              700: "#4338ca",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.35), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.22), transparent 35%),
+        linear-gradient(135deg, #0f172a 0%, #111827 45%, #1e293b 100%);
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .screen-title {
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .screen-subtitle {
+      color: rgba(226, 232, 240, 0.78);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .panel-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.55rem;
+      text-align: left;
+    }
+
+    .select-ui {
+      width: 100%;
+      border-radius: 1rem;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      padding: 0.95rem 1rem;
+      outline: none;
+      transition: 0.25s ease;
+    }
+
+    .select-ui:focus {
+      border-color: rgba(99, 102, 241, 0.9);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 1rem;
+      padding: 0.95rem 1rem;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+      color: white;
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.28);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.96;
+    }
+
+    .btn-secondary {
+      background: rgba(51, 65, 85, 0.9);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(71, 85, 105, 0.95);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 10px 24px rgba(220, 38, 38, 0.24);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .icon-btn {
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: white;
+      transition: 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .score-card {
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.9rem 1rem;
+    }
+
+    .score-label {
+      display: block;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .score-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    #gameBoard {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      padding: 1rem;
+      border-radius: 1.5rem;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    [id^="cell"] {
+      aspect-ratio: 1 / 1;
+      min-height: 84px;
+      border-radius: 1.1rem;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      opacity: 0.96;
+    }
+
+    [id^="cell"]:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.55);
+      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .rule-item {
+      border-radius: 1rem;
+      padding: 0.95rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+    }
+
+    .badge-win { background: rgba(34, 197, 94, 0.16); color: #86efac; }
+    .badge-lose { background: rgba(239, 68, 68, 0.16); color: #fca5a5; }
+    .badge-draw { background: rgba(250, 204, 21, 0.16); color: #fde68a; }
+
+    .light-mode {
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.18), transparent 35%),
+        linear-gradient(135deg, #e0e7ff 0%, #dbeafe 42%, #cbd5e1 100%);
+      color: #0f172a;
+    }
+
+    .light-mode .glass-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .light-mode .screen-subtitle,
+    .light-mode .panel-label,
+    .light-mode .score-label {
+      color: #475569;
+    }
+
+    .light-mode .select-ui,
+    .light-mode .btn-secondary,
+    .light-mode .btn-ghost,
+    .light-mode .icon-btn,
+    .light-mode .score-card,
+    .light-mode .rule-item,
+    .light-mode #gameBoard,
+    .light-mode [id^="cell"] {
+      color: #0f172a;
+    }
+
+    .light-mode .select-ui {
+      background: rgba(241, 245, 249, 0.95);
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    .light-mode .btn-secondary,
+    .light-mode .btn-ghost,
+    .light-mode .icon-btn,
+    .light-mode .score-card,
+    .light-mode .rule-item {
+      background: rgba(248, 250, 252, 0.85);
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    .light-mode #gameBoard {
+      background: linear-gradient(180deg, rgba(241, 245, 249, 0.98), rgba(226, 232, 240, 0.98));
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+
+    .light-mode [id^="cell"] {
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(226,232,240,0.98));
+      border-color: rgba(15, 23, 42, 0.08);
+    }
+  </style>
 </head>
-<body id = "body" class="flex flex-col items-center justify-center min-h-screen text-white ">
+<body id="body" class="text-white flex items-center justify-center px-4 py-8">
+  <main class="w-full max-w-md">
+    <!-- Home Screen -->
+    <section id="homeScreen" class="glass-card rounded-[2rem] shadow-soft p-6 sm:p-8 space-y-6">
+      <div class="flex items-center justify-between">
+        <a href="#" onclick="changeTheme('sun')" id="schatten1" class="icon-btn text-2xl"><i class='bx bxs-sun'></i></a>
+        <a href="#" onclick="changeTheme('moon')" id="schatten2" class="icon-btn text-2xl hidden"><i class='bx bxs-moon'></i></a>
+        <button class="icon-btn text-2xl" type="button" aria-label="Paramètres">
+          <i class='bx bxs-cog'></i>
+        </button>
+      </div>
 
-<!-- Home Screen-->
-<div id="homeScreen" class=" max-w-sm p-6 space-y-6 text-center bg-neutral-900"  >
-<div class=" w-full  h-8 relative">
-    
-    <a href="#" onclick="changeTheme('sun')" id = "schatten1" class="text-3xl absolute top-0 left-0 "><i class='bx bxs-sun' ></i></a>
-    <a href="#" class="text-3xl absolute right-0 top-0"><i class='bx bxs-cog'></i></a>
-    <a href="#" onclick="changeTheme('moon')" id = "schatten2" class="text-3xl absolute top-0 left-0 hidden"><i class='bx bxs-moon' ></i></a>
-    
-</div>
-<div class="text-4xl font-bold">Tic-Tac-Toe</div>
-<div class="space-y-4">
-    <label for="boardSize" class="block text-lg font-medium">Board Size:</label>
-    <select id="boardSize" class="w-full px-4 py-2 text-lg font-medium bg-gray-700 rounded">
-      <option value="">-- choice --</option>
-      <option value="3">3x3</option>
-      <option value="4">4x4</option>
-      <option value="5">5x5</option>
-    </select>
-    <label for="winCondition" class="block text-lg font-medium">Win Condition:</label>
-    <select id="winCondition" class="w-full px-4 py-2 text-lg font-medium bg-gray-700 rounded">
-      <option value="">-- choice --</option>
-      <option value="3">3 in a row</option>
-      <option value="4">4 in a row</option>
-      <option value="5">5 in a row</option>
-    </select>
-    <button onclick="startGame('solo')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Play Solo</button>
-    <button onclick="startGame('friend')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Play with a friend</button>
-    <button onclick="startGame('old')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Reload</button>
-    <button onclick="showRules()" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">About</button>
-</div>
-</div>
-<!-- Game Rules Screen -->
-<div id="rulesScreen" class="hidden w-full max-w-sm p-6 space-y-4 bg-neutral-900">
-    <div class="text-3xl font-bold divide-y">Game Rules</div>
-        <ul class="space-y-2">
+      <div class="space-y-2 text-center">
+        <p class="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+          Arcade Mode
+        </p>
+        <h1 class="screen-title">Tic-Tac-Toe</h1>
+        <p class="screen-subtitle">
+          Une version plus propre, plus moderne et plus agréable à jouer.
+        </p>
+      </div>
 
-            <span>-------------</span>
-            <li><span class="font-bold text-green-500">WIN:</span> <p>Get 3 marks in a row,</p> Player wins. game ends.</li>
-            <li><span class="font-bold text-red-500">DEFEAT:</span> <p>Opponent gets 3 in a row,</p> Player loses, game ends.</li>
-            <li><span class="font-bold text-yellow-500">DRAW:</span> <p>Board full,</p> no 3 in a row.
-                No winner, game ends.</li>
-        </ul>
-        <button onclick="goHome()" class="w-full px-4 py-2 bg-gray-700 rounded hover:bg-gray-600">Back</button>
-</div>
-<!--Game Level -->
-<div id="levelScreen" class="hidden w-full max-w-sm p-6 space-y-4 bg-neutral-900">
-    <button onclick="intellige ('beginner')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Beginner</button>
-    <button onclick="intellige ('amateur')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Amateur</button>
-    <button onclick="intellige ('professional')" class="w-full px-4 py-2 text-lg font-medium bg-blue-600 rounded hover:bg-blue-500">Professional</button>
-    <div class="flex justify-between space-x-3">
-        <button onclick="back()" class="px-2 py-2 text-sm bg-blue-600 rounded hover:bg-red-500">Back</button>
-        <button onclick="showRules()" class="px-2 py-2 text-sm bg-gray-600 rounded hover:bg-gray-500">Game Rules</button>
-    </div>
-</div> 
-<!-- Game Screen -->
-<div id="gameScreen" class="hidden w-full max-w-sm p-6 space-y-4 bg-neutral-900">
+      <div class="space-y-4">
+        <div>
+          <label for="boardSize" class="panel-label">Taille du plateau</label>
+          <select id="boardSize" class="select-ui">
+            <option value="">-- Choisir --</option>
+            <option value="3">3 x 3</option>
+            <option value="4">4 x 4</option>
+            <option value="5">5 x 5</option>
+          </select>
+        </div>
 
-    <div class="flex justiy-between space-x-10">
-        <span id="playerScore" class="text-lg">You: 0</span>
-        <span id="botScore" class="text-lg" >Bot: 0</span>
-    </div>
-    <div id="gameBoard" class="grid grid-cols-3 bg-blue-600 gap-5 p-4 sm:gap-6 md:gap-8 lg:gap-10">
-        <!-- Les cellules du jeu seront générées dynamiquement par JavaScript -->
-    <div class="grid grid-cols-3 bg-blue-600 gap-5 p-4">
-        <div id="cell-0" onclick="makeMove(0)"class="w-16 h-16  bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-1" onclick="makeMove(1)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-2" onclick="makeMove(2)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-3" onclick="makeMove(3)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-4" onclick="makeMove(4)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-5" onclick="makeMove(5)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-6" onclick="makeMove(6)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-7" onclick="makeMove(7)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-        <div id="cell-8" onclick="makeMove(8)" class="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-2xl cursor-pointer "></div>
-    </div>
-    <div class="flex justify-between space-x-3">
-        <button onclick="resetGame()" class="px-2 py-2 text-sm bg-red-600 rounded hover:bg-red-500">Reset Game</button>
-        <button onclick="back()" class="px-2 py-2 text-sm bg-blue-600 rounded hover:bg-red-500">Back and save</button>
-        <button onclick="showRules()" class="px-2 py-2 text-sm bg-gray-600 rounded hover:bg-gray-500">Game Rules</button>
-    </div>
-</div>
+        <div>
+          <label for="winCondition" class="panel-label">Condition de victoire</label>
+          <select id="winCondition" class="select-ui">
+            <option value="">-- Choisir --</option>
+            <option value="3">3 alignés</option>
+            <option value="4">4 alignés</option>
+            <option value="5">5 alignés</option>
+          </select>
+        </div>
+      </div>
 
-<script src="script.js"></script>    
+      <div class="space-y-3">
+        <button onclick="startGame('solo')" class="btn btn-primary">Jouer contre le bot</button>
+        <button onclick="startGame('friend')" class="btn btn-secondary">Jouer à deux</button>
+        <button onclick="startGame('old')" class="btn btn-ghost">Reprendre la partie</button>
+        <button onclick="showRules()" class="btn btn-ghost">Voir les règles</button>
+      </div>
+    </section>
+
+    <!-- Rules Screen -->
+    <section id="rulesScreen" class="glass-card rounded-[2rem] shadow-soft p-6 sm:p-8 space-y-6 hidden">
+      <div class="space-y-2">
+        <h2 class="screen-title">Règles du jeu</h2>
+        <p class="screen-subtitle">Tout est clair et rapide avant de lancer la partie.</p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="rule-item">
+          <span class="badge badge-win">WIN</span>
+          <p class="text-sm leading-6 text-slate-200">Aligne le nombre de symboles demandé pour remporter la manche.</p>
+        </div>
+
+        <div class="rule-item">
+          <span class="badge badge-lose">DEFEAT</span>
+          <p class="text-sm leading-6 text-slate-200">Si l’adversaire aligne ses symboles avant toi, la manche est perdue.</p>
+        </div>
+
+        <div class="rule-item">
+          <span class="badge badge-draw">DRAW</span>
+          <p class="text-sm leading-6 text-slate-200">Si le plateau est plein sans gagnant, la partie se termine en égalité.</p>
+        </div>
+      </div>
+
+      <button onclick="goHome()" class="btn btn-secondary">Retour à l’accueil</button>
+    </section>
+
+    <!-- Level Screen -->
+    <section id="levelScreen" class="glass-card rounded-[2rem] shadow-soft p-6 sm:p-8 space-y-6 hidden">
+      <div class="space-y-2 text-center">
+        <h2 class="screen-title">Choisis ton niveau</h2>
+        <p class="screen-subtitle">Plus le niveau monte, plus le bot devient difficile à battre.</p>
+      </div>
+
+      <div class="space-y-3">
+        <button onclick="intellige('beginner')" class="btn btn-primary">Débutant</button>
+        <button onclick="intellige('amateur')" class="btn btn-secondary">Amateur</button>
+        <button onclick="intellige('professional')" class="btn btn-ghost">Professionnel</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="back()" class="btn btn-secondary">Retour</button>
+        <button onclick="showRules()" class="btn btn-ghost">Règles</button>
+      </div>
+    </section>
+
+    <!-- Game Screen -->
+    <section id="gameScreen" class="glass-card rounded-[2rem] shadow-soft p-5 sm:p-6 space-y-5 hidden">
+      <div class="flex items-center justify-between gap-3">
+        <div class="score-card flex-1">
+          <span class="score-label">Joueur</span>
+          <span id="playerScore" class="score-value">You: 0</span>
+        </div>
+        <div class="score-card flex-1 text-right">
+          <span class="score-label">Adversaire</span>
+          <span id="botScore" class="score-value">Bot: 0</span>
+        </div>
+      </div>
+
+      <div id="gameBoard">
+        <div id="cell-0" onclick="makeMove(0)"></div>
+        <div id="cell-1" onclick="makeMove(1)"></div>
+        <div id="cell-2" onclick="makeMove(2)"></div>
+        <div id="cell-3" onclick="makeMove(3)"></div>
+        <div id="cell-4" onclick="makeMove(4)"></div>
+        <div id="cell-5" onclick="makeMove(5)"></div>
+        <div id="cell-6" onclick="makeMove(6)"></div>
+        <div id="cell-7" onclick="makeMove(7)"></div>
+        <div id="cell-8" onclick="makeMove(8)"></div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="resetGame()" class="btn btn-danger">Reset</button>
+        <button onclick="back()" class="btn btn-secondary">Back & Save</button>
+        <button onclick="showRules()" class="btn btn-ghost">Rules</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
